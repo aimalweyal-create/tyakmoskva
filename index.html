@@ -1,327 +1,1169 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ТЯК-МОСКВА</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f3f4f6; }
-        .toast { animation: fadeInUp 0.3s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        /* Hide number input arrows for a cleaner look */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] { -moz-appearance: textfield; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wholesale Catalog</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f5f7;
+    color: #171717;
+}
+
+header {
+    background: #111;
+    color: white;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 21px;
+}
+
+button {
+    border: 0;
+    border-radius: 9px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.admin-btn {
+    background: #fff;
+    color: #111;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.brands {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+}
+
+.brand-btn {
+    background: white;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+}
+
+.brand-btn.active {
+    background: #111;
+    color: white;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,.07);
+}
+
+.product-image {
+    height: 180px;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 16px;
+}
+
+.card h3 {
+    margin: 0 0 6px;
+}
+
+.price {
+    font-size: 19px;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.stock {
+    color: #16803c;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: white;
+}
+
+.add-btn {
+    width: 100%;
+    background: #111;
+    color: white;
+}
+
+.cart-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #111;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.25);
+    z-index: 30;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 50;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal-content {
+    max-width: 650px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 15px;
+    padding: 22px;
+}
+
+.modal h2 {
+    margin-top: 0;
+}
+
+.cart-item {
+    border-bottom: 1px solid #eee;
+    padding: 14px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty button {
+    padding: 5px 9px;
+    background: #eee;
+}
+
+.total {
+    font-size: 21px;
+    font-weight: bold;
+    margin-top: 18px;
+}
+
+.close {
+    background: #eee;
+}
+
+.admin-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.admin-item {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.danger {
+    background: #dc3545;
+    color: white;
+}
+
+.success {
+    background: #16803c;
+    color: white;
+}
+
+.secondary {
+    background: #eee;
+}
+
+.hidden {
+    display: none;
+}
+
+@media(max-width:600px) {
+    .products {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .product-image {
+        height: 140px;
+    }
+
+    .card-body {
+        padding: 11px;
+    }
+
+    .card h3 {
+        font-size: 15px;
+    }
+
+    .price {
+        font-size: 16px;
+    }
+
+    button {
+        padding: 9px 11px;
+    }
+}
+</style>
 </head>
-<body class="text-gray-900 pb-24">
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-40 p-4 flex justify-between items-center">
-        <h1 class="text-xl font-black uppercase tracking-tight">ТЯК-МОСКВА 👑</h1>
-        <div class="flex gap-4">
-            <button onclick="viewCart()" class="relative">
-                🛒
-                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
-            </button>
+<body>
+
+<header>
+    <h1>Wholesale Catalog</h1>
+    <button class="admin-btn" onclick="openAdmin()">⚙ Admin</button>
+</header>
+
+<div class="container">
+
+    <h2>Brands</h2>
+    <div class="brands" id="brands"></div>
+
+    <div class="products" id="products"></div>
+
+</div>
+
+<button class="cart-button" onclick="openCart()">
+    🛒 Cart <span id="cartCount">0</span>
+</button>
+
+
+<!-- CART -->
+<div class="modal" id="cartModal">
+    <div class="modal-content">
+
+        <h2>Your Order</h2>
+
+        <div id="cartItems"></div>
+
+        <div class="total">
+            Total: €<span id="cartTotal">0.00</span>
         </div>
-    </header>
 
-    <!-- Catalog View -->
-    <main id="catalog-view" class="max-w-2xl mx-auto p-4">
-        <div id="products-container" class="grid grid-cols-1 gap-4"></div>
-    </main>
+        <br>
 
-    <!-- Product Detail View -->
-    <main id="detail-view" class="max-w-2xl mx-auto p-4 hidden"></main>
+        <input id="customerName" placeholder="Customer name">
 
-    <!-- Cart View -->
-    <main id="cart-view" class="max-w-2xl mx-auto p-4 hidden"></main>
+        <input id="customerContact" placeholder="Phone / Telegram / Email">
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg hidden toast"></div>
+        <button class="success" style="width:100%" onclick="submitOrder()">
+            Submit Order
+        </button>
 
-    <script>
-        let products = [];
-        let cart = JSON.parse(localStorage.getItem('tyak_cart') || '[]');
+        <br><br>
 
-        // --- Init ---
-        async function init() {
-            const res = await fetch('/products.json');
-            products = await res.json();
-            renderCatalog();
-            updateCartBadge();
-        }
+        <button class="close" onclick="closeCart()">
+            Close
+        </button>
 
-        // --- Catalog ---
-        function renderCatalog() {
-            document.getElementById('catalog-view').classList.remove('hidden');
-            document.getElementById('detail-view').classList.add('hidden');
-            document.getElementById('cart-view').classList.add('hidden');
+    </div>
+</div>
 
-            const container = document.getElementById('products-container');
-            if (products.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 mt-10">Каталог пуст. Загрузите товары через админ-панель.</p>';
-                return;
-            }
 
-            container.innerHTML = products.map(p => `
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden flex cursor-pointer hover:shadow-md transition" onclick="viewProduct(${p.id})">
-                    <div class="w-1/3 bg-gray-100 flex items-center justify-center overflow-hidden">
-                        ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<div class="w-20 h-20 rounded-full bg-blue-500"></div>`}
-                    </div>
-                    <div class="p-4 w-2/3 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-md">${p.name}</h3>
-                            <p class="text-sm text-gray-500 mt-1 line-clamp-2">${p.desc || ''}</p>
-                        </div>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="font-black text-lg">${p.price.toLocaleString('ru-RU')} ₽</span>
-                            <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded-lg">Выбрать</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+<!-- ADMIN -->
+<div class="modal" id="adminModal">
+    <div class="modal-content">
 
-        // --- Product Detail (Input box for each flavor) ---
-        function viewProduct(id) {
-            const p = products.find(x => x.id === id);
-            if (!p) return;
+        <h2>⚙ Admin Panel</h2>
 
-            document.getElementById('catalog-view').classList.add('hidden');
-            const view = document.getElementById('detail-view');
-            view.classList.remove('hidden');
+        <input id="brandName" placeholder="Brand name">
 
-            let flavorsHtml = p.sizes.map(size => {
-                let safeId = size.replace(/\s/g, '');
-                // Check if out of stock
-                if (p.stock && p.stock[size] === 0) {
-                    return `
-                        <div class="flex justify-between items-center py-3 border-b bg-gray-50 px-2 rounded-lg">
-                            <span class="text-gray-400 line-through">${size}</span>
-                            <span class="text-red-500 text-xs font-bold">Нет в наличии</span>
-                        </div>`;
+        <button class="success" onclick="addBrand()">
+            + Add Brand
+        </button>
+
+        <div class="admin-section">
+            <h3>Brands & Products</h3>
+            <div id="adminList"></div>
+        </div>
+
+        <br>
+
+        <button class="close" onclick="closeAdmin()">
+            Close
+        </button>
+
+    </div>
+</div>
+
+
+<script>
+
+/* =========================
+   DATABASE
+========================= */
+
+const defaultData = {
+    brands: [
+        {
+            id: 1,
+            name: "Brand A",
+            products: [
+                {
+                    id: 101,
+                    name: "Product 1",
+                    price: 25,
+                    stock: 100,
+                    image: "",
+                    variants: [
+                        "Variant A",
+                        "Variant B",
+                        "Variant C"
+                    ]
+                },
+                {
+                    id: 102,
+                    name: "Product 2",
+                    price: 30,
+                    stock: 50,
+                    image: "",
+                    variants: [
+                        "Variant A",
+                        "Variant B"
+                    ]
                 }
-                
-                let maxQty = (p.stock && p.stock[size] !== undefined) ? p.stock[size] : 99;
-                return `
-                    <div class="flex justify-between items-center py-3 border-b">
-                        <span class="font-medium flex-1">${size}</span>
-                        <input type="number" id="qty-${safeId}" min="0" max="${maxQty}" value="0" placeholder="0" class="w-16 p-2 border-2 border-gray-200 rounded-lg text-center font-bold focus:border-blue-500 outline-none" onchange="checkMaxQty('${safeId}', ${maxQty})">
-                    </div>`;
-            }).join('');
+            ]
+        },
+        {
+            id: 2,
+            name: "Brand B",
+            products: [
+                {
+                    id: 201,
+                    name: "Product 3",
+                    price: 22,
+                    stock: 80,
+                    image: "",
+                    variants: [
+                        "Variant A",
+                        "Variant B",
+                        "Variant C",
+                        "Variant D"
+                    ]
+                }
+            ]
+        }
+    ]
+};
 
-            view.innerHTML = `
-                <button onclick="renderCatalog()" class="mb-4 flex items-center text-blue-600 font-semibold">← Назад</button>
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <div class="h-60 bg-gray-100 flex items-center justify-center">
-                        ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<div class="w-32 h-32 rounded-full bg-blue-500"></div>`}
-                    </div>
-                    <div class="p-4">
-                        <h2 class="text-2xl font-black">${p.name}</h2>
-                        <p class="text-gray-600 mt-1">${p.desc || ''}</p>
-                        <p class="text-xl font-black mt-2 mb-4">${p.price.toLocaleString('ru-RU')} ₽</p>
-                        
-                        <h3 class="font-bold mb-2">Выберите вкусы (введите количество):</h3>
-                        <div class="space-y-1 mb-6">${flavorsHtml}</div>
+let data = JSON.parse(localStorage.getItem("wholesaleData")) || defaultData;
 
-                        <button onclick="addMultipleToCart(${p.id})" class="w-full bg-green-600 text-white p-4 rounded-xl font-bold text-lg hover:bg-green-700 transition">
-                            Добавить в корзину
-                        </button>
-                    </div>
+let selectedBrand = data.brands[0]?.id || null;
+
+let cart = JSON.parse(localStorage.getItem("wholesaleCart")) || [];
+
+
+/* =========================
+   SAVE
+========================= */
+
+function saveData() {
+    localStorage.setItem(
+        "wholesaleData",
+        JSON.stringify(data)
+    );
+}
+
+function saveCart() {
+    localStorage.setItem(
+        "wholesaleCart",
+        JSON.stringify(cart)
+    );
+}
+
+
+/* =========================
+   DISPLAY BRANDS
+========================= */
+
+function renderBrands() {
+
+    const container = document.getElementById("brands");
+
+    container.innerHTML = "";
+
+    data.brands.forEach(brand => {
+
+        const button = document.createElement("button");
+
+        button.className =
+            "brand-btn " +
+            (selectedBrand === brand.id ? "active" : "");
+
+        button.textContent = brand.name;
+
+        button.onclick = () => {
+
+            selectedBrand = brand.id;
+
+            renderBrands();
+            renderProducts();
+
+        };
+
+        container.appendChild(button);
+
+    });
+}
+
+
+/* =========================
+   DISPLAY PRODUCTS
+========================= */
+
+function renderProducts() {
+
+    const container =
+        document.getElementById("products");
+
+    container.innerHTML = "";
+
+    const brand =
+        data.brands.find(b => b.id === selectedBrand);
+
+    if (!brand) return;
+
+    brand.products.forEach(product => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "card";
+
+        let imageHTML =
+            `<div class="product-image">
+                No Image
+             </div>`;
+
+        if (product.image) {
+
+            imageHTML =
+                `<div class="product-image">
+                    <img src="${product.image}">
+                 </div>`;
+
+        }
+
+        card.innerHTML = `
+
+            ${imageHTML}
+
+            <div class="card-body">
+
+                <h3>${product.name}</h3>
+
+                <div class="price">
+                    €${Number(product.price).toFixed(2)}
                 </div>
+
+                <div class="stock">
+                    Stock: ${product.stock}
+                </div>
+
+                <select id="variant-${product.id}">
+                    ${product.variants.map(v =>
+                        `<option>${v}</option>`
+                    ).join("")}
+                </select>
+
+                <input
+                    type="number"
+                    id="quantity-${product.id}"
+                    value="1"
+                    min="1"
+                    max="${product.stock}"
+                >
+
+                <button
+                    class="add-btn"
+                    onclick="addToCart(${product.id})"
+                >
+                    + Add to Cart
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(card);
+
+    });
+}
+
+
+/* =========================
+   ADD TO CART
+========================= */
+
+function addToCart(productId) {
+
+    const brand =
+        data.brands.find(b => b.id === selectedBrand);
+
+    const product =
+        brand.products.find(p => p.id === productId);
+
+    const variant =
+        document.getElementById(
+            `variant-${productId}`
+        ).value;
+
+    const quantity =
+        Number(document.getElementById(
+            `quantity-${productId}`
+        ).value);
+
+    if (quantity < 1) return;
+
+    const existing =
+        cart.find(item =>
+            item.productId === productId &&
+            item.variant === variant
+        );
+
+    if (existing) {
+
+        existing.quantity += quantity;
+
+    } else {
+
+        cart.push({
+
+            brand: brand.name,
+
+            productId: product.id,
+
+            product: product.name,
+
+            variant: variant,
+
+            price: Number(product.price),
+
+            quantity: quantity
+
+        });
+
+    }
+
+    saveCart();
+
+    updateCartCount();
+
+    alert("Added to cart!");
+
+}
+
+
+/* =========================
+   CART
+========================= */
+
+function updateCartCount() {
+
+    const count =
+        cart.reduce(
+            (sum, item) =>
+                sum + item.quantity,
+            0
+        );
+
+    document.getElementById(
+        "cartCount"
+    ).textContent = count;
+}
+
+
+function openCart() {
+
+    renderCart();
+
+    document.getElementById(
+        "cartModal"
+    ).style.display = "block";
+
+}
+
+
+function closeCart() {
+
+    document.getElementById(
+        "cartModal"
+    ).style.display = "none";
+
+}
+
+
+function renderCart() {
+
+    const container =
+        document.getElementById("cartItems");
+
+    container.innerHTML = "";
+
+    let total = 0;
+
+    cart.forEach((item, index) => {
+
+        const subtotal =
+            item.price * item.quantity;
+
+        total += subtotal;
+
+        const div =
+            document.createElement("div");
+
+        div.className = "cart-item";
+
+        div.innerHTML = `
+
+            <div>
+
+                <strong>${item.brand}</strong><br>
+
+                ${item.product}<br>
+
+                <small>
+                    ${item.variant}
+                </small>
+
+                <br>
+
+                €${item.price.toFixed(2)}
+
+            </div>
+
+            <div>
+
+                <div class="qty">
+
+                    <button onclick="changeQty(${index}, -1)">
+                        −
+                    </button>
+
+                    <strong>
+                        ${item.quantity}
+                    </strong>
+
+                    <button onclick="changeQty(${index}, 1)">
+                        +
+                    </button>
+
+                </div>
+
+                <br>
+
+                <button
+                    class="danger"
+                    onclick="removeCartItem(${index})"
+                >
+                    Remove
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(div);
+
+    });
+
+    document.getElementById(
+        "cartTotal"
+    ).textContent = total.toFixed(2);
+
+}
+
+
+function changeQty(index, amount) {
+
+    cart[index].quantity += amount;
+
+    if (cart[index].quantity <= 0) {
+
+        cart.splice(index, 1);
+
+    }
+
+    saveCart();
+
+    updateCartCount();
+
+    renderCart();
+
+}
+
+
+function removeCartItem(index) {
+
+    cart.splice(index, 1);
+
+    saveCart();
+
+    updateCartCount();
+
+    renderCart();
+
+}
+
+
+/* =========================
+   SUBMIT ORDER
+========================= */
+
+function submitOrder() {
+
+    if (cart.length === 0) {
+
+        alert("Your cart is empty.");
+
+        return;
+
+    }
+
+    const name =
+        document.getElementById(
+            "customerName"
+        ).value.trim();
+
+    const contact =
+        document.getElementById(
+            "customerContact"
+        ).value.trim();
+
+    if (!name || !contact) {
+
+        alert(
+            "Please enter your name and contact."
+        );
+
+        return;
+
+    }
+
+    let message =
+        "NEW WHOLESALE ORDER\n\n";
+
+    message +=
+        "Customer: " + name + "\n";
+
+    message +=
+        "Contact: " + contact + "\n\n";
+
+    cart.forEach(item => {
+
+        message +=
+            `${item.brand} - ${item.product}\n`;
+
+        message +=
+            `Variant: ${item.variant}\n`;
+
+        message +=
+            `Quantity: ${item.quantity}\n`;
+
+        message +=
+            `Price: €${item.price}\n\n`;
+
+    });
+
+    const total =
+        cart.reduce(
+            (sum, item) =>
+                sum + item.price * item.quantity,
+            0
+        );
+
+    message +=
+        "TOTAL: €" + total.toFixed(2);
+
+    alert(message);
+
+    /*
+       Later you can replace this with:
+
+       - Telegram Bot API
+       - WhatsApp
+       - Email
+       - Your backend API
+       - Database
+    */
+
+}
+
+
+/* =========================
+   ADMIN
+========================= */
+
+function openAdmin() {
+
+    renderAdmin();
+
+    document.getElementById(
+        "adminModal"
+    ).style.display = "block";
+
+}
+
+
+function closeAdmin() {
+
+    document.getElementById(
+        "adminModal"
+    ).style.display = "none";
+
+}
+
+
+function addBrand() {
+
+    const input =
+        document.getElementById("brandName");
+
+    const name =
+        input.value.trim();
+
+    if (!name) {
+
+        alert("Enter a brand name.");
+
+        return;
+
+    }
+
+    data.brands.push({
+
+        id: Date.now(),
+
+        name: name,
+
+        products: []
+
+    });
+
+    input.value = "";
+
+    saveData();
+
+    renderAdmin();
+
+    renderBrands();
+
+}
+
+
+/* =========================
+   ADMIN LIST
+========================= */
+
+function renderAdmin() {
+
+    const container =
+        document.getElementById("adminList");
+
+    container.innerHTML = "";
+
+    data.brands.forEach(brand => {
+
+        const brandDiv =
+            document.createElement("div");
+
+        brandDiv.className =
+            "admin-item";
+
+        brandDiv.innerHTML = `
+
+            <strong>${brand.name}</strong>
+
+            <br><br>
+
+            <button
+                class="secondary"
+                onclick="addProduct(${brand.id})"
+            >
+                + Add Product
+            </button>
+
+            <button
+                class="danger"
+                onclick="deleteBrand(${brand.id})"
+            >
+                Delete Brand
+            </button>
+
+        `;
+
+        brand.products.forEach(product => {
+
+            const productDiv =
+                document.createElement("div");
+
+            productDiv.style.marginTop = "12px";
+
+            productDiv.style.padding = "10px";
+
+            productDiv.style.background = "#f5f5f5";
+
+            productDiv.style.borderRadius = "8px";
+
+            productDiv.innerHTML = `
+
+                <strong>
+                    ${product.name}
+                </strong>
+
+                <br>
+
+                €${product.price}
+
+                <br>
+
+                Variants:
+                ${product.variants.join(", ")}
+
+                <br><br>
+
+                <button
+                    class="secondary"
+                    onclick="addVariant(
+                        ${brand.id},
+                        ${product.id}
+                    )"
+                >
+                    + Add Variant
+                </button>
+
+                <button
+                    class="danger"
+                    onclick="deleteProduct(
+                        ${brand.id},
+                        ${product.id}
+                    )"
+                >
+                    Delete
+                </button>
+
             `;
-            window.scrollTo(0, 0);
-        }
 
-        function checkMaxQty(safeId, maxQty) {
-            const input = document.getElementById(`qty-${safeId}`);
-            let val = parseInt(input.value) || 0;
-            if (val > maxQty) {
-                input.value = maxQty;
-                showToast(`Доступно только ${maxQty} шт.`);
-            }
-        }
+            brandDiv.appendChild(productDiv);
 
-        function addMultipleToCart(productId) {
-            const p = products.find(x => x.id === productId);
-            let addedCount = 0;
+        });
 
-            for (const size of p.sizes) {
-                let safeId = size.replace(/\s/g, '');
-                const input = document.getElementById(`qty-${safeId}`);
-                if (input) {
-                    let qty = parseInt(input.value) || 0;
-                    if (qty > 0) {
-                        // Double check stock
-                        if (p.stock && p.stock[size] !== undefined && qty > p.stock[size]) {
-                            qty = p.stock[size];
-                        }
-                        if (qty > 0) {
-                            cart.push({
-                                id: p.id,
-                                name: p.name,
-                                size: size,
-                                price: p.price,
-                                qty: qty,
-                                image: p.image
-                            });
-                            addedCount += qty;
-                        }
-                    }
-                }
-            }
+        container.appendChild(brandDiv);
 
-            if (addedCount === 0) {
-                showToast("Укажите количество хотя бы для одного вкуса");
-                return;
-            }
+    });
 
-            localStorage.setItem('tyak_cart', JSON.stringify(cart));
-            updateCartBadge();
-            showToast(`Добавлено в корзину: ${addedCount} шт`);
-            
-            // Return to catalog
-            setTimeout(() => renderCatalog(), 800);
-        }
+}
 
-        // --- Cart ---
-        function viewCart() {
-            document.getElementById('catalog-view').classList.add('hidden');
-            document.getElementById('detail-view').classList.add('hidden');
-            const view = document.getElementById('cart-view');
-            view.classList.remove('hidden');
 
-            if (cart.length === 0) {
-                view.innerHTML = `
-                    <button onclick="renderCatalog()" class="mb-4 flex items-center text-blue-600 font-semibold">← Назад</button>
-                    <div class="text-center mt-20">
-                        <p class="text-xl font-bold mb-2">Корзина пуста</p>
-                        <button onclick="renderCatalog()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">В каталог</button>
-                    </div>`;
-                return;
-            }
+/* =========================
+   ADD PRODUCT
+========================= */
 
-            let total = 0;
-            let itemsHtml = cart.map((item, index) => {
-                total += item.price * item.qty;
-                return `
-                    <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center mb-3">
-                        <div>
-                            <h3 class="font-bold">${item.name}</h3>
-                            <p class="text-sm text-gray-500">Вкус: ${item.size}</p>
-                            <p class="font-black text-blue-600 mt-1">${item.price.toLocaleString('ru-RU')} ₽</p>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <div class="flex items-center gap-2 mb-2">
-                                <button onclick="changeCartQty(${index}, -1)" class="w-7 h-7 rounded-full bg-gray-200 font-bold">-</button>
-                                <span class="font-bold w-5 text-center">${item.qty}</span>
-                                <button onclick="changeCartQty(${index}, 1)" class="w-7 h-7 rounded-full bg-blue-600 text-white font-bold">+</button>
-                            </div>
-                            <button onclick="removeFromCart(${index})" class="text-red-500 text-xs">Удалить</button>
-                        </div>
-                    </div>`;
-            }).join('');
+function addProduct(brandId) {
 
-            view.innerHTML = `
-                <button onclick="renderCatalog()" class="mb-4 flex items-center text-blue-600 font-semibold">← Назад</button>
-                <h2 class="text-2xl font-black mb-4">Ваша корзина</h2>
-                <div>${itemsHtml}</div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm mt-4">
-                    <div class="flex justify-between font-black text-xl mb-4">
-                        <span>Итого:</span>
-                        <span>${total.toLocaleString('ru-RU')} ₽</span>
-                    </div>
-                    <button onclick="checkout()" class="w-full bg-green-600 text-white p-4 rounded-xl font-bold text-lg">Оформить заказ</button>
-                </div>
-            `;
-        }
+    const name =
+        prompt("Product name:");
 
-        function changeCartQty(index, delta) {
-            cart[index].qty = Math.max(1, cart[index].qty + delta);
-            localStorage.setItem('tyak_cart', JSON.stringify(cart));
-            viewCart();
-            updateCartBadge();
-        }
+    if (!name) return;
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            localStorage.setItem('tyak_cart', JSON.stringify(cart));
-            viewCart();
-            updateCartBadge();
-        }
+    const price =
+        Number(prompt("Wholesale price:", "25"));
 
-        function updateCartBadge() {
-            const badge = document.getElementById('cart-count');
-            let count = cart.reduce((sum, item) => sum + item.qty, 0);
-            if (count > 0) {
-                badge.innerText = count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
+    const stock =
+        Number(prompt("Stock quantity:", "100"));
 
-        // --- Checkout ---
-        function checkout() {
-            const tg_user = window.Telegram.WebApp.initDataUnsafe?.user || {};
-            const name = tg_user.first_name ? tg_user.first_name + (tg_user.last_name ? ' ' + tg_user.last_name : '') : prompt("Введите ваше имя:");
-            const phone = prompt("Введите ваш телефон для связи:");
+    const image =
+        prompt(
+            "Image URL (optional):",
+            ""
+        );
 
-            if (!name || !phone) {
-                showToast("Укажите имя и телефон");
-                return;
-            }
+    const brand =
+        data.brands.find(
+            b => b.id === brandId
+        );
 
-            fetch('/api/order', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    name: name,
-                    phone: phone,
-                    items: cart,
-                    tg_user: tg_user
-                })
-            }).then(res => {
-                if (res.ok) {
-                    localStorage.removeItem('tyak_cart');
-                    cart = [];
-                    updateCartBadge();
-                    document.getElementById('cart-view').innerHTML = `
-                        <div class="text-center mt-20">
-                            <h2 class="text-3xl font-black text-green-600 mb-4">✅ Заказ оформлен!</h2>
-                            <p class="text-gray-600 mb-6">Мы свяжемся с вами в Telegram для подтверждения.</p>
-                            <button onclick="renderCatalog()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold">Вернуться в каталог</button>
-                        </div>`;
-                } else {
-                    alert("Ошибка оформления заказа");
-                }
-            });
-        }
+    brand.products.push({
 
-        // --- Utils ---
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 2000);
-        }
+        id: Date.now(),
 
-        // Telegram WebApp setup
-        if (window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
-            window.Telegram.WebApp.BackButton.onClick(() => {
-                if (!document.getElementById('cart-view').classList.contains('hidden')) renderCatalog();
-                else if (!document.getElementById('detail-view').classList.contains('hidden')) renderCatalog();
-            });
-        }
+        name: name,
 
-        init();
-    </script>
+        price: price || 0,
+
+        stock: stock || 0,
+
+        image: image || "",
+
+        variants: []
+
+    });
+
+    saveData();
+
+    renderAdmin();
+
+    renderProducts();
+
+}
+
+
+/* =========================
+   ADD VARIANT
+========================= */
+
+function addVariant(
+    brandId,
+    productId
+) {
+
+    const variant =
+        prompt("Variant name:");
+
+    if (!variant) return;
+
+    const brand =
+        data.brands.find(
+            b => b.id === brandId
+        );
+
+    const product =
+        brand.products.find(
+            p => p.id === productId
+        );
+
+    product.variants.push(variant);
+
+    saveData();
+
+    renderAdmin();
+
+    renderProducts();
+
+}
+
+
+/* =========================
+   DELETE PRODUCT
+========================= */
+
+function deleteProduct(
+    brandId,
+    productId
+) {
+
+    if (!confirm(
+        "Delete this product?"
+    )) return;
+
+    const brand =
+        data.brands.find(
+            b => b.id === brandId
+        );
+
+    brand.products =
+        brand.products.filter(
+            p => p.id !== productId
+        );
+
+    saveData();
+
+    renderAdmin();
+
+    renderProducts();
+
+}
+
+
+/* =========================
+   DELETE BRAND
+========================= */
+
+function deleteBrand(brandId) {
+
+    if (!confirm(
+        "Delete this brand and all products?"
+    )) return;
+
+    data.brands =
+        data.brands.filter(
+            b => b.id !== brandId
+        );
+
+    selectedBrand =
+        data.brands[0]?.id || null;
+
+    saveData();
+
+    renderAdmin();
+
+    renderBrands();
+
+    renderProducts();
+
+}
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+renderBrands();
+
+renderProducts();
+
+updateCartCount();
+
+</script>
+
 </body>
 </html>
